@@ -18,6 +18,7 @@ use std::{str};
 
 static IP: &'static str = "127.0.0.1";
 static PORT:        int = 4414;
+static mut visitor_count: int = 0;
 
 fn main() {
     let addr = from_str::<SocketAddr>(format!("{:s}:{:d}", IP, PORT)).unwrap();
@@ -33,7 +34,10 @@ fn main() {
             match stream {
                 Some(ref mut s) => {
                              match s.peer_name() {
-                                Some(pn) => {println(format!("Received connection from: [{:s}]", pn.to_str()));},
+                                Some(pn) => {
+				    println(format!("Received connection from: [{:s}]", pn.to_str()));
+				    unsafe {visitor_count += 1;}
+				},
                                 None => ()
                              }
                            },
@@ -44,6 +48,7 @@ fn main() {
             stream.read(buf);
             let request_str = str::from_utf8(buf);
             println(format!("Received request :\n{:s}", request_str));
+	    unsafe{println(format!("{:d} visitors", visitor_count));}
             
             let response: ~str = 
                 ~"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n
