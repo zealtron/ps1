@@ -47,21 +47,48 @@ fn main() {
             let mut buf = [0, ..500];
             stream.read(buf);
             let request_str = str::from_utf8(buf);
-            println(format!("Received request :\n{:s}", request_str));
 	    unsafe{println(format!("{:d} visitors", visitor_count));}
+            println(format!("Received request :\n{:s}", request_str));
+	    let r: ~[&str] = request_str.split(' ').collect();
+	    if (r[0].contains("GET") && r[2].contains("HTTP/1.1")) {
+		request(r[1]);
+
+	    }
+	    else {
+		print("TEST");
+ 		let response: ~str = 
+                    ~"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n
+                     <doctype !html><html><head><title>Hello, Rust!</title>
+                     <style>body { background-color: #111; color: #FFEEAA }
+                            h1 { font-size:2cm; text-align: center; color: black; text-shadow: 0 0 4mm red}
+                            h2 { font-size:2cm; text-align: center; color: black; text-shadow: 0 0 4mm green}
+               	     </style></head>
+                     <body>
+                     <h1>Greetings, Krusty!</h1>
+                     </body></html>\r\n";
+		stream.write(response.as_bytes());
+	    }
+		    
+	    
+	    
             
-            let response: ~str = 
-                ~"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n
-                 <doctype !html><html><head><title>Hello, Rust!</title>
-                 <style>body { background-color: #111; color: #FFEEAA }
-                        h1 { font-size:2cm; text-align: center; color: black; text-shadow: 0 0 4mm red}
-                        h2 { font-size:2cm; text-align: center; color: black; text-shadow: 0 0 4mm green}
-                 </style></head>
-                 <body>
-                 <h1>Greetings, Krusty!</h1>
-                 </body></html>\r\n";
-            stream.write(response.as_bytes());
+            //let response: ~str = 
+              //  ~"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n
+                // <doctype !html><html><head><title>Hello, Rust!</title>
+                 //<style>body { background-color: #111; color: #FFEEAA }
+                  //      h1 { font-size:2cm; text-align: center; color: black; text-shadow: 0 0 4mm red}
+                    //    h2 { font-size:2cm; text-align: center; color: black; text-shadow: 0 0 4mm green}
+                 //</style></head>
+                 //<body>
+                 //<h1>Greetings, Krusty!</h1>
+                 //</body></html>\r\n";
+            //stream.write(response.as_bytes());
             println!("Connection terminates.");
         }
     }
+}
+
+fn request(a: &str) {
+    print!("{:s}", a);
+
 }
